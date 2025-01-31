@@ -1,42 +1,45 @@
-// components/ModalComponent.js
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+
+const { height, width } = Dimensions.get('window'); // Get screen dimensions
 
 const ModalComponent = ({ visible, onClose, currentRow, setCurrentRow, handleSave }) => {
   if (!visible) return null;
 
   const fields = [
-    ['type', 'itemName'],
+ 
     ['grossWt', 'tch'],
-    ['badla', 'fineWt'],
-    ['labRate', 'amount'],
-   
+    ['badla'],
+    
   ];
 
   return (
     <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
+      <View style={[styles.modalContent, { height: height > width ? '55%' : '100%' }]}>
         {/* Modal Header */}
         <View style={styles.modalHeader}>
           <Text style={styles.modalTitle}>Jagcalc</Text>
           <View style={styles.headerLine} />
         </View>
 
-        {/* Input Fields */}
-        {fields.map((fieldPair, index) => (
-          <View key={index} style={styles.inputRow}>
-            {fieldPair.map((field) => (
-              <TextInput
-                key={field}
-                style={styles.modalInput}
-                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                placeholderTextColor="#888"
-                value={currentRow[field]}
-                onChangeText={(text) => setCurrentRow({ ...currentRow, [field]: text })}
-              />
-            ))}
-          </View>
-        ))}
+        {/* ScrollView for Input Fields */}
+        <ScrollView style={styles.scrollView}>
+          {fields.map((fieldPair, index) => (
+            <View key={index} style={styles.inputRow}>
+              {fieldPair.map((field) => (
+                <TextInput
+                  key={field}
+                  style={styles.modalInput}
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  placeholderTextColor="#888"
+                  value={currentRow[field]}
+                  onChangeText={(text) => setCurrentRow({ ...currentRow, [field]: text })}
+                  keyboardType={field === 'type' || field === 'itemName' ? 'default' : 'numeric'}
+                />
+              ))}
+            </View>
+          ))}
+        </ScrollView>
 
         {/* Action Buttons */}
         <View style={styles.modalActions}>
@@ -59,7 +62,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    height: '55%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -73,7 +75,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '', // Golden yellow
     marginBottom: 8,
     textShadowColor: 'rgba(0,0,0,0.1)',
     textShadowOffset: { width: 1, height: 1 },
@@ -105,6 +106,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',

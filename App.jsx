@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from './src/components/Header';
 import DataTable from './src/components/DataTable';
 import ModalComponent from './src/components/ModalComponent';
+import BottomComponent from './src/components/BottomComponent';
+import TopBar from './src/components/TopBar';
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -12,7 +14,9 @@ const App = () => {
   const [voucherNumber, setVoucherNumber] = useState('');
   const [date, setDate] = useState('');
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const loadData = async () => {
     const savedData = await AsyncStorage.getItem('tableData');
@@ -53,25 +57,18 @@ const App = () => {
   };
 
   return (
-    <ScrollView style={styles.pageContainer}>
-      <View style={styles.container}>
-        <Header
-          voucherNumber={voucherNumber}
-          setVoucherNumber={setVoucherNumber}
-          date={date}
-          setDate={setDate}
-        />
+    <View style={styles.pageContainer}>
+      <TopBar/>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.container}>
+          <DataTable data={data} handleEditRow={handleEditRow} handleDeleteRow={handleDeleteRow} />
+          <TouchableOpacity style={styles.addButton} onPress={handleAddRow}>
+            <Text style={styles.addButtonText}>Add Row</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
 
-        <DataTable
-          data={data}
-          handleEditRow={handleEditRow}
-          handleDeleteRow={handleDeleteRow}
-        />
-
-        <TouchableOpacity style={styles.addButton} onPress={handleAddRow}>
-          <Text style={styles.addButtonText}>Add Row</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomComponent />
 
       <Modal visible={modalVisible} animationType="slide">
         <ModalComponent
@@ -82,19 +79,22 @@ const App = () => {
           handleSave={handleSaveRow}
         />
       </Modal>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  pageContainer: { 
-    flex: 1, 
-    backgroundColor: '#F8F9FA' 
+  pageContainer: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
   },
-  container: { 
-    padding: 16 
+  scrollContent: {
+    paddingBottom: 80,
   },
-  addButton: { 
+  container: {
+    padding: 16,
+  },
+  addButton: {
     backgroundColor: '#FFD700',
     paddingVertical: 14,
     paddingHorizontal: 24,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  addButtonText: { 
+  addButtonText: {
     color: '#2A2A2A',
     fontWeight: '700',
     fontSize: 16,
